@@ -1,30 +1,26 @@
 import tensorflow as tf
 import cv2
 import numpy as np
-from tensorflow.examples.tutorials.mnist import input_data
-mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
+import time
+# from tensorflow.examples.tutorials.mnist import input_data
+# mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
+
+t0 = time.time()
 
 # create functions to import and convert images and give images labels
 # pull in testImage and convert to mnist format
-testImage = cv2.imread("test_images/7.png")
+testImage = cv2.imread("test_images3/7_2.png")
 
 testImage = cv2.cvtColor(testImage, cv2.COLOR_BGR2GRAY)
 testImage = testImage.ravel()
 testImage = testImage.astype(float)
-for pixel,val in enumerate(testImage):
-    if val == 255:
-        testImage[pixel] = 0.
-    else:
-        testImage[pixel] = float(val)/255
 
-# testImage = np.transpose(testImage)
+testImage = 1 - testImage/255
+
 testImage = np.reshape(testImage, (1,784))
-
-print "Test Image Shape = ",testImage.shape
 
 testLabel = np.array([0,0,0,0,0,0,0,1,0,0])
 testLabel = np.reshape(testLabel, (1,10))
-print "Test Label Shape = ",testLabel.shape
 
 sess = tf.InteractiveSession()
 
@@ -108,18 +104,21 @@ accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 saver = tf.train.Saver()
 with tf.Session() as sess:
     saver.restore(sess, "variables/advanced_model.ckpt")
-    print("test accuracy %g"%accuracy.eval(feed_dict={x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
+    # display accuracy of entire test set
+    # print("test accuracy %g"%accuracy.eval(feed_dict={x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
 
     # print the accuracy of the model on our test data
-    print("custom test accuracy %g"%accuracy.eval(feed_dict={x: testImage, y_: testLabel, keep_prob: 1.0}))
+    print "Custom Test Accuracy"
+    print(accuracy.eval(feed_dict={x: testImage, y_: testLabel, keep_prob: 1.0}))
 
-    # print "Custom Test Prediction"
-    # print(sess.run(tf.argmax(y_conv,1)[0], feed_dict={x: testImage, y_: testLabel}))
-    #
-    # print "Custom Test Actual"
-    # print np.argmax(testLabel,1)[0]
+    print "Custom Test Prediction"
+    print(sess.run(tf.argmax(y_conv,1)[0], feed_dict={x: testImage, y_: testLabel, keep_prob: 1.0}))
 
-    print("weights:", sess.run(W_fc2))
-    print("biases:", sess.run(b_fc2))
+    print "Custom Test Actual"
+    print np.argmax(testLabel,1)[0]
 
 # NOTE: this model will yield an accuracy of about 92%, this is not very good, simple improvements can improve our results to over 97%, and the best models can get over 99.7% accuracy
+
+t1 = time.time()
+
+print "Time to run:",t1-t0,"seconds"
