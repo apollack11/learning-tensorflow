@@ -24,6 +24,7 @@ for i,filename in enumerate(files):
     print i,directory + '/' + filename
     # import image and convert to numpy array of proper size
     image = cv2.imread(directory + '/' + filename)
+    # image = cv2.imread(os.path.join(directory, filename))
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     image = image.ravel()
     image = image.astype(float)
