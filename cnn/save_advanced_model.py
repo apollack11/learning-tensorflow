@@ -85,25 +85,39 @@ y_conv = tf.matmul(h_fc1_drop, W_fc2) + b_fc2
 # replace gradient descent with ADAM optimizer
 # we will include the additional parameter keep_prob in feed_dict to control the dropout rate
 # we will add logging to every 100th iteration in the training process
-cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(y_conv, y_))
+cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y_conv))
 train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
 correct_prediction = tf.equal(tf.argmax(y_conv,1), tf.argmax(y_,1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 sess.run(tf.global_variables_initializer())
-# for i in range(200):
+
+tf.summary.scalar("accuracy", accuracy)
+tf.summary.scalar("cross_entropy", cross_entropy)
+merged = tf.summary.merge_all()
+train_writer = tf.summary.FileWriter('logs/train', sess.graph)
+test_writer = tf.summary.FileWriter('logs/test', sess.graph)
+
+saver = tf.train.Saver()
+
+# for i in range(1):
 for i in range(20000):
     batch = mnist.train.next_batch(50)
-    if i % 100 == 0:
-        train_accuracy = accuracy.eval(feed_dict={x:batch[0], y_:batch[1], keep_prob: 1.0})
-        print("step %d, training accuracy %g"%(i, train_accuracy))
-    train_step.run(feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
 
-print("test accuracy %g"%accuracy.eval(feed_dict={x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
+    if i % 100 == 0:
+        summary, acc = sess.run([merged, accuracy], feed_dict={x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0})
+        test_writer.add_summary(summary, i)
+        print("step %d, test accuracy %g"%(i, acc))
+        save_path = saver.save(sess, "models/test.ckpt")
+        print("Save #%d to path: "%(i), save_path)
+    summary, _ = sess.run([merged, train_step], feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
+    train_writer.add_summary(summary, i)
+
+print("final test accuracy %g"%accuracy.eval(feed_dict={x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
 
 print("weights:", sess.run(W_fc2))
 print("biases:", sess.run(b_fc2))
 
 saver = tf.train.Saver()
 
-save_path = saver.save(sess, "variables/advanced_model.ckpt")
+save_path = saver.save(sess, "models/test.ckpt")
 print("Save to path: ", save_path)

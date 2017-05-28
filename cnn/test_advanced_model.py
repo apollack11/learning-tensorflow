@@ -136,6 +136,9 @@ with tf.Session() as sess:
     print "Custom Test Actual"
     print np.argmax(labels,1)
 
+    result = sess.run(y_conv, feed_dict={x: images, y_: labels, keep_prob: 1.0})
+    print "y_conv: ",result
+
 # NOTE: this model will yield an accuracy of about 92%, this is not very good, simple improvements can improve our results to over 97%, and the best models can get over 99.7% accuracy
 
 t1 = time.time()

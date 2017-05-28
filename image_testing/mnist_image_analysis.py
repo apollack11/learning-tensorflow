@@ -6,7 +6,7 @@ mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
 # takes in the MNIST dataset and converts an individual image to a readable format
 # this is used to verify the formula for converting readable images into MNIST images
 
-testImage = cv2.imread("test_images/7.png")
+testImage = cv2.imread("image_database/7_0001.png")
 
 testImage = cv2.cvtColor(testImage, cv2.COLOR_BGR2GRAY)
 

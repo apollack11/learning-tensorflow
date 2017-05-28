@@ -1,0 +1,34 @@
+Convolutional Neural Network Tensorflow Implementation
+
+Hyperparameters
+- Convolution
+    - Number of features
+    - Size of features
+- Pooling
+    - Window size
+    - Window stride
+- Fully connected
+    - Number of neurons
+Architecture
+- How many of each type of layer?
+- In what order?
+
+
+MNIST Tutorial Example
+
+Convolutional layers, which apply a specified number of convolution filters to the image. For each subregion, the layer performs a set of mathematical operations to produce a single value in the output feature map. Convolutional layers then typically apply a ReLU activation function to the output to introduce nonlinearities into the model.
+Pooling layers, which downsample the image data extracted by the convolutional layers to reduce the dimensionality of the feature map in order to decrease processing time. A commonly used pooling algorithm is max pooling, which extracts subregions of the feature map (e.g., 2x2-pixel tiles), keeps their maximum value, and discards all other values.
+Dense (fully connected) layers, which perform classification on the features extracted by the convolutional layers and downsampled by the pooling layers. In a dense layer, every node in the layer is connected to every node in the preceding layer.
+
+Architecture:
+Convolutional Layer #1: Applies 32 5x5 filters (extracting 5x5-pixel subregions), with ReLU activation function
+Pooling Layer #1: Performs max pooling with a 2x2 filter and stride of 2 (which specifies that pooled regions do not overlap)
+Convolutional Layer #2: Applies 64 5x5 filters, with ReLU activation function
+Pooling Layer #2: Again, performs max pooling with a 2x2 filter and stride of 2
+Dense Layer #1: 1,024 neurons, with dropout regularization rate of 0.4 (probability of 0.4 that any given element will be dropped during training)
+Dense Layer #2 (Logits Layer): 10 neurons, one for each digit target class (0–9).
+
+TRAINING:
+
+batch = mnist.train.next_batch(50)
+// Returns a list "batch" of length 2 which contains 50 images and 50 labels for those images. So x gets set to batch[0] as the input and y_ gets set to batch[1] as the corresponding labels.
